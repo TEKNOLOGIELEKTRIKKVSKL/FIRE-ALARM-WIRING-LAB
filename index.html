@@ -695,10 +695,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 <style id="faw83-floating-style">
-/* FAW-LAB V8.3: compact, movable tools stay on the viewport, not on the zoomed board. */
-#faw83Float{position:fixed;left:auto;right:14px;bottom:16px;z-index:9000;width:min(356px,calc(100vw - 20px));background:#152c3d;color:#fff;border:2px solid #7ba2b9;border-radius:15px;box-shadow:0 7px 25px #0009;touch-action:none;user-select:none;font-family:Arial,sans-serif;overflow:hidden}
+/* FAW-LAB V8.4: mobile-safe floating toolbar, independent of zoomed board. */
+#faw83Float{position:fixed;left:auto;right:14px;bottom:16px;z-index:9000;width:min(356px,calc(100vw - 20px));background:#152c3d;color:#fff;border:2px solid #7ba2b9;border-radius:15px;box-shadow:0 7px 25px #0009;touch-action:auto;user-select:none;font-family:Arial,sans-serif;overflow:hidden}
 #faw83Float *{box-sizing:border-box}
-#faw83Float .f83-head{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 9px;background:#29495e;cursor:grab;touch-action:none}
+#faw83Float .f83-head{overscroll-behavior:contain;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 9px;background:#29495e;cursor:grab;touch-action:none}
 #faw83Float .f83-head strong{font-size:11px;letter-spacing:.5px}
 #faw83Float .f83-head button{padding:4px 10px;min-height:30px;font-size:17px}
 #faw83Float .f83-main{padding:8px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
@@ -713,7 +713,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:760px){#faw83Float{right:8px;bottom:8px;width:min(338px,calc(100vw - 16px))}#faw83Float .f83-main button{font-size:10px}#faw83Float .f83-color{width:27px;height:27px;min-width:27px;min-height:27px}}
 @media print{#faw83Float{display:none!important}}
 </style>
-<script id="faw83-floating-script">
+<script id="faw84-floating-script">
 (()=>{'use strict';
 function setup(){if(document.getElementById('faw83Float'))return;
  const box=document.createElement('section');box.id='faw83Float';box.setAttribute('aria-label','Alatan pantas workbench');
@@ -730,12 +730,42 @@ function setup(){if(document.getElementById('faw83Float'))return;
  by('f83ColorToggle').onclick=()=>{const el=by('f83Colors');el.hidden=!el.hidden;el.style.display=el.hidden?'none':'flex'};
  by('f83Menu').onclick=()=>{document.body.classList.remove('faw80-collapsed');const side=by('faw80Side');if(side){side.style.display='';side.querySelector('.faw80-section')?.setAttribute('open','');side.scrollTop=0}by('faw80Collapse')?.setAttribute('aria-expanded','true')};
  by('f83Min').onclick=()=>{box.classList.toggle('f83-min');by('f83Min').textContent=box.classList.contains('f83-min')?'+':'−';by('f83Min').title=box.classList.contains('f83-min')?'Besarkan toolbar':'Kecilkan toolbar'};
- // Drag via the title only; preserve normal button taps and wiring gestures.
+ // V8.4: stable mobile dragging with pointer capture and viewport-aware coordinates.
+ // Only the header (not its buttons) can initiate a drag.
  let drag=null;const handle=by('f83Drag');
- handle.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=box.getBoundingClientRect();drag={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};handle.setPointerCapture(e.pointerId);e.preventDefault()});
- handle.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const x=Math.max(0,Math.min(innerWidth-box.offsetWidth,e.clientX-drag.dx));const y=Math.max(0,Math.min(innerHeight-box.offsetHeight,e.clientY-drag.dy));box.style.left=x+'px';box.style.top=y+'px';box.style.right='auto';box.style.bottom='auto'});
- const end=e=>{if(drag&&drag.id===e.pointerId)drag=null};handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
- window.addEventListener('resize',()=>{if(!box.style.left)return;const r=box.getBoundingClientRect();box.style.left=Math.max(0,Math.min(innerWidth-box.offsetWidth,r.left))+'px';box.style.top=Math.max(0,Math.min(innerHeight-box.offsetHeight,r.top))+'px'});
+ const viewport=()=>{const v=window.visualViewport;return {left:v?v.offsetLeft:0,top:v?v.offsetTop:0,width:v?v.width:document.documentElement.clientWidth,height:v?v.height:window.innerHeight}};
+ const clamp=(n,min,max)=>Math.max(min,Math.min(Math.max(min,max),n));
+ function place(x,y){const v=viewport();const w=box.getBoundingClientRect().width,h=box.getBoundingClientRect().height;
+  box.style.left=clamp(x,v.left,v.left+v.width-w)+'px';box.style.top=clamp(y,v.top,v.top+v.height-h)+'px';box.style.right='auto';box.style.bottom='auto';}
+ function keepVisible(){if(drag)return;const r=box.getBoundingClientRect(),v=viewport();
+  if(box.style.left||r.right>v.left+v.width||r.bottom>v.top+v.height||r.left<v.left||r.top<v.top)place(r.left,r.top);}
+ handle.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button')||(!e.isPrimary&&e.pointerType!=='mouse')||(e.pointerType==='mouse'&&e.button!==0))return;
+  const r=box.getBoundingClientRect();
+  // Position explicitly before dragging to avoid CSS right/bottom versus left/top conflicts.
+  box.style.left=r.left+'px';box.style.top=r.top+'px';box.style.right='auto';box.style.bottom='auto';
+  drag={id:e.pointerId,startX:e.clientX,startY:e.clientY,originX:r.left,originY:r.top};
+  try{handle.setPointerCapture(e.pointerId)}catch(_){/* browser may cancel capture */}
+  e.preventDefault();e.stopPropagation();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(!drag||drag.id!==e.pointerId)return;
+  place(drag.originX+(e.clientX-drag.startX),drag.originY+(e.clientY-drag.startY));
+  e.preventDefault();
+ });
+ function endDrag(e){if(!drag||drag.id!==e.pointerId)return;drag=null;
+  try{if(handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId)}catch(_){}
+  keepVisible();}
+ handle.addEventListener('pointerup',endDrag);handle.addEventListener('pointercancel',endDrag);
+ handle.addEventListener('lostpointercapture',e=>{if(drag&&drag.id===e.pointerId){drag=null;keepVisible()}});
+ // Keyboard opening/closing changes visualViewport without necessarily firing window resize.
+ window.addEventListener('resize',keepVisible,{passive:true});
+ window.addEventListener('orientationchange',()=>requestAnimationFrame(keepVisible),{passive:true});
+ if(window.visualViewport){window.visualViewport.addEventListener('resize',keepVisible,{passive:true});window.visualViewport.addEventListener('scroll',keepVisible,{passive:true})}
+ document.addEventListener('focusout',e=>{if(e.target.matches('input,textarea,[contenteditable]'))requestAnimationFrame(keepVisible)});
+ // A collapsed or expanded toolbar must remain within the visible screen.
+ by('f83Min').addEventListener('click',()=>requestAnimationFrame(keepVisible));
+ keepVisible();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
