@@ -150,7 +150,77 @@ body.faw82-focus #faw80Right .board-scroll{flex:1 1 auto!important}
 }
 @media print{body.faw82-focus>header{display:none!important}#fawMobileHelp{display:none!important}}
 </style>
-<style id="faw86-style">#wires .faw86-segment-hit{cursor:move;touch-action:none;pointer-events:stroke!important}#faw86DeleteMode.active{background:#ac3030!important;border-color:#ff9b9b!important}#faw86ResetRoute,#faw86DeleteMode{font-size:11px!important;white-space:normal!important}#faw80Floating{flex-wrap:wrap}@media(max-width:760px){#faw86ResetRoute,#faw86DeleteMode{font-size:10px!important;padding:6px!important}}</style></head><body><header><div class="brand"><img id="college-logo" src="https://i.postimg.cc/FK73xpPx/LOGO-KVSKLwhiteline.png" alt="Logo Kolej Vokasional Setapak" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="logo-fallback">KOLEJ<br>VOKASIONAL<br>SETAPAK</div></div><div class="headinfo"><h1>FIRE ALARM WIRING VIRTUAL LAB KOLEJ VOKASIONAL</h1><small></small><div class="student-summary"><strong>NAMA PELAJAR:</strong> <span id="showName">BELUM DIISI</span><br><strong>NO. KAD PENGENALAN:</strong> <span id="showIC">BELUM DIISI</span></div></div></header><div class="layout"><aside><section class="identity"><h3 style="margin:0 0 8px">MAKLUMAT PELAJAR</h3><label for="studentName">NAMA PENUH</label><input id="studentName" type="text" autocomplete="name" placeholder="NAMA PENUH" maxlength="120" required><label for="studentIC">NO. KAD PENGENALAN (12 DIGIT)</label><input id="studentIC" type="text" inputmode="numeric" autocomplete="off" placeholder="CONTOH: 080101141234" maxlength="12" pattern="[0-9]{12}" required><div class="hint">Masukkan 12 digit tanpa tanda sempang (-).</div></section><h3>KATALOG KOMPONEN</h3><div id="catalog"></div><div id="counter"></div><h3>WARNA WAYAR</h3><div class="swatches"><label><input type="radio" name="color" value="#d83939" checked> 🔴</label><label><input type="radio" name="color" value="#2469d5"> 🔵</label><label><input type="radio" name="color" value="#222222"> ⚫</label><label><input type="radio" name="color" value="#e1a800"> 🟡</label><label><input type="radio" name="color" value="#198956"> 🟢</label></div><h3>ARAHAN</h3><div class="info">1. Tambah komponen ke papan.<br>2. Tarik pada <b>tajuk komponen</b> untuk mengalihkannya.<br>3. Klik terminal pertama, kemudian terminal kedua.<br>4. Wayar berada di atas komponen dan mengelak pertindihan dan melompat pada persilangan (tidak bersambung elektrik). Klik wayar untuk memadamnya.<br>5. Gunakan Uji Wiring untuk menyemak litar asas.<br><br>Terminal peranti ialah <b>contoh generik latihan</b>. Semak manual pengeluar sebelum membuat pendawaian sebenar.</div><section class="result-panel" aria-live="polite"><h3>KEPUTUSAN UJIAN PENDAWAIAN</h3><div class="result-overall neutral" id="resultOverall">BELUM DIUJI</div><div id="resultCards"><div class="result-item">Tekan UJI WIRING untuk melihat keputusan setiap litar yang digunakan.</div></div><div class="result-note">Semakan topologi asas sahaja. Tidak mengesahkan polariti, arus beban, keserasian atau litar penggera sebenar.</div></section><div class="status" id="status">Papan pendawaian sedia digunakan.</div></aside><main class="workspace"><div id="workbenchDock" class="workbench-dock"><div class="dock-title">KOMPONEN & WARNA WAYAR <span id="dockCounter"></span></div><div id="dockCatalog" class="dock-catalog"></div><div id="dockColors" class="dock-colors"><strong class="wire-color-title">PILIH WARNA WAYAR</strong></div></div><div class="controls"><button id="test">✓ UJI WIRING</button><button id="undo">↶ UNDO</button><button id="clear">RESET WAYAR</button><button id="reset">RESET SEMUA</button><button id="save">SIMPAN JSON</button><button id="load">BUKA JSON</button><button class="primary-print" id="printPdf">🖨 CETAK / SIMPAN PDF</button><input type="file" id="file" accept="application/json" hidden><span class="badge" id="countW">0 wayar</span></div><div class="viewport-tools"><span>WORKBENCH • Seret ruang kosong untuk bergerak</span><div class="zoom-tools"><button id="zoomOut" type="button" aria-label="Zoom out">−</button><output id="zoomLabel">100%</output><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomFit" type="button">FIT</button></div></div><div class="board-scroll" id="scroll"><div id="boardSizer"><div class="board" id="board"><svg id="wires"></svg><div id="devices"></div></div></div></div><div id="toast">Klik pada terminal untuk memulakan sambungan.</div><div id="dockResults" class="dock-results"></div></main></div><footer><strong>MUHAMAD ARIF BIN OMAR</strong><div>PENSYARAH KOLEJ VOKASIONAL SETAPAK</div><div>2026</div><div class="ownership-note">Penggunaan untuk latihan dibenarkan. Penyalinan, penerbitan semula atau pengedaran kod tanpa kebenaran pemegang hak cipta adalah dilarang.</div></footer><section id="print-report" aria-hidden="true"></section><script>
+<style id="faw86-style">#wires .faw86-segment-hit{cursor:move;touch-action:none;pointer-events:stroke!important}#faw86DeleteMode.active{background:#ac3030!important;border-color:#ff9b9b!important}#faw86ResetRoute,#faw86DeleteMode{font-size:11px!important;white-space:normal!important}#faw80Floating{flex-wrap:wrap}@media(max-width:760px){#faw86ResetRoute,#faw86DeleteMode{font-size:10px!important;padding:6px!important}}</style>
+<style id="faw861-compact-mobile">
+/* V8.6.1: compact responsive mobile control strip; no horizontal clipping. */
+#faw80Right, #faw80Right .viewport-tools {min-width:0;max-width:100%}
+#faw80Right .viewport-tools {box-sizing:border-box}
+#faw80Floating {min-width:0}
+#faw80Floating button {overflow-wrap:anywhere;word-break:normal}
+@media(max-width:900px){
+  #faw80Right .viewport-tools{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:5px!important;
+    padding:5px!important;
+    margin:0 0 5px!important;
+    background:#172b3a;
+    border:1px solid #456075;
+    border-radius:8px;
+    overflow:hidden!important;
+  }
+  #faw80Right .viewport-tools>span{display:none!important}
+  #faw80Right .zoom-tools{
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    width:100%!important;
+    min-width:0!important;
+    gap:7px!important;
+  }
+  #faw80Right .zoom-tools button{
+    min-width:39px!important;
+    min-height:34px!important;
+    padding:4px 9px!important;
+    font-size:15px!important;
+    flex:0 0 auto;
+  }
+  #faw80Right .zoom-tools #zoomFit{font-size:11px!important}
+  #faw80Right .zoom-tools output{min-width:46px!important;font-size:12px!important}
+  #faw80Floating{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    width:100%!important;
+    gap:5px!important;
+    align-items:stretch!important;
+  }
+  #faw80Floating button{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:34px!important;
+    padding:5px 3px!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow:visible!important;
+  }
+  #faw80Floating #faw80Fullscreen{font-size:10px!important}
+  #faw80Floating #faw86ResetRoute{font-size:10px!important}
+  #faw80Floating #faw86DeleteMode{font-size:10px!important}
+}
+@media(max-width:390px){
+  #faw80Floating button{font-size:9px!important;padding:4px 2px!important}
+  #faw80Right .zoom-tools{gap:4px!important}
+}
+@media print{
+  #faw80Right .viewport-tools{display:none!important}
+}
+</style>
+</head><body><header><div class="brand"><img id="college-logo" src="https://i.postimg.cc/FK73xpPx/LOGO-KVSKLwhiteline.png" alt="Logo Kolej Vokasional Setapak" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="logo-fallback">KOLEJ<br>VOKASIONAL<br>SETAPAK</div></div><div class="headinfo"><h1>FIRE ALARM WIRING VIRTUAL LAB KOLEJ VOKASIONAL</h1><small></small><div class="student-summary"><strong>NAMA PELAJAR:</strong> <span id="showName">BELUM DIISI</span><br><strong>NO. KAD PENGENALAN:</strong> <span id="showIC">BELUM DIISI</span></div></div></header><div class="layout"><aside><section class="identity"><h3 style="margin:0 0 8px">MAKLUMAT PELAJAR</h3><label for="studentName">NAMA PENUH</label><input id="studentName" type="text" autocomplete="name" placeholder="NAMA PENUH" maxlength="120" required><label for="studentIC">NO. KAD PENGENALAN (12 DIGIT)</label><input id="studentIC" type="text" inputmode="numeric" autocomplete="off" placeholder="CONTOH: 080101141234" maxlength="12" pattern="[0-9]{12}" required><div class="hint">Masukkan 12 digit tanpa tanda sempang (-).</div></section><h3>KATALOG KOMPONEN</h3><div id="catalog"></div><div id="counter"></div><h3>WARNA WAYAR</h3><div class="swatches"><label><input type="radio" name="color" value="#d83939" checked> 🔴</label><label><input type="radio" name="color" value="#2469d5"> 🔵</label><label><input type="radio" name="color" value="#222222"> ⚫</label><label><input type="radio" name="color" value="#e1a800"> 🟡</label><label><input type="radio" name="color" value="#198956"> 🟢</label></div><h3>ARAHAN</h3><div class="info">1. Tambah komponen ke papan.<br>2. Tarik pada <b>tajuk komponen</b> untuk mengalihkannya.<br>3. Klik terminal pertama, kemudian terminal kedua.<br>4. Wayar berada di atas komponen dan mengelak pertindihan dan melompat pada persilangan (tidak bersambung elektrik). Klik wayar untuk memadamnya.<br>5. Gunakan Uji Wiring untuk menyemak litar asas.<br><br>Terminal peranti ialah <b>contoh generik latihan</b>. Semak manual pengeluar sebelum membuat pendawaian sebenar.</div><section class="result-panel" aria-live="polite"><h3>KEPUTUSAN UJIAN PENDAWAIAN</h3><div class="result-overall neutral" id="resultOverall">BELUM DIUJI</div><div id="resultCards"><div class="result-item">Tekan UJI WIRING untuk melihat keputusan setiap litar yang digunakan.</div></div><div class="result-note">Semakan topologi asas sahaja. Tidak mengesahkan polariti, arus beban, keserasian atau litar penggera sebenar.</div></section><div class="status" id="status">Papan pendawaian sedia digunakan.</div></aside><main class="workspace"><div id="workbenchDock" class="workbench-dock"><div class="dock-title">KOMPONEN & WARNA WAYAR <span id="dockCounter"></span></div><div id="dockCatalog" class="dock-catalog"></div><div id="dockColors" class="dock-colors"><strong class="wire-color-title">PILIH WARNA WAYAR</strong></div></div><div class="controls"><button id="test">✓ UJI WIRING</button><button id="undo">↶ UNDO</button><button id="clear">RESET WAYAR</button><button id="reset">RESET SEMUA</button><button id="save">SIMPAN JSON</button><button id="load">BUKA JSON</button><button class="primary-print" id="printPdf">🖨 CETAK / SIMPAN PDF</button><input type="file" id="file" accept="application/json" hidden><span class="badge" id="countW">0 wayar</span></div><div class="viewport-tools"><span>WORKBENCH • Seret ruang kosong untuk bergerak</span><div class="zoom-tools"><button id="zoomOut" type="button" aria-label="Zoom out">−</button><output id="zoomLabel">100%</output><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomFit" type="button">FIT</button></div></div><div class="board-scroll" id="scroll"><div id="boardSizer"><div class="board" id="board"><svg id="wires"></svg><div id="devices"></div></div></div></div><div id="toast">Klik pada terminal untuk memulakan sambungan.</div><div id="dockResults" class="dock-results"></div></main></div><footer><strong>MUHAMAD ARIF BIN OMAR</strong><div>PENSYARAH KOLEJ VOKASIONAL SETAPAK</div><div>2026</div><div class="ownership-note">Penggunaan untuk latihan dibenarkan. Penyalinan, penerbitan semula atau pengedaran kod tanpa kebenaran pemegang hak cipta adalah dilarang.</div></footer><section id="print-report" aria-hidden="true"></section><script>
 (()=>{'use strict';const limits={mcp:10,smoke:10,heat:10,bell:10,strobe:10,eol:20};const names={mcp:'MCP',smoke:'SMOKE DETECTOR',heat:'HEAT DETECTOR',bell:'FIRE BELL',strobe:'SOUNDER STROBE',eol:'EOL RESISTOR'};const specs={mcp:['COM','NO','NC'],smoke:['L+ IN','L- IN','L+ OUT','L- OUT'],heat:['COM','NO','NC'],bell:['+','-'],strobe:['+','-'],eol:['A','B']};let devices=[],wires=[],selected=null,nextId=1,drag=null,wireRedo=[];let routeUndo=[],routeRedo=[],segmentDrag=null,segmentFrame=0,wireDeleteMode=false,suppressWireClickUntil=0;const $=id=>document.getElementById(id);const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const key=(id,p)=>id+':'+p;const msg=s=>$('toast').textContent=s;const get=id=>devices.find(d=>d.id===id);const point=(id,p)=>{const e=document.querySelector(`[data-id="${id}"] [data-pin="${CSS.escape(p)}"] .pin`);if(!e)return null;const b=e.getBoundingClientRect(),base=$('board').getBoundingClientRect();return{x:(b.left+b.width/2-base.left)/(window.labZoom||1),y:(b.top+b.height/2-base.top)/(window.labZoom||1)}};
 function init(){routeUndo=[];routeRedo=[];wireRedo=[];devices=[{id:'facp',type:'facp',x:32,y:55}];nextId=1;wires=[];wireRedo=[];selected=null;invalidateResults();render()};function pins(d){return d.type==='facp'?Array.from({length:10},(_,i)=>[`Z${i+1}+`,`Z${i+1}-`]).flat().concat(['BELL1+','BELL1-','BELL2+','BELL2-']):specs[d.type]};function face(type){return type==='facp'?'<span class="led"></span><b>FIRE ALARM CONTROL PANEL</b><span class="led red"></span>':type==='mcp'?'<div class="mcp"><span>PRESS<br>HERE</span></div>':type==='smoke'?'<div class="round"></div>':type==='heat'?'<div class="round heat"></div>':type==='bell'?'<div class="bell">BELL</div>':type==='strobe'?'<div class="strobe">STROBE</div>':'<div class="eol">EOL Ω</div>'};function render(){const box=$('devices');box.innerHTML=devices.map(d=>`<div class="device ${d.type==='facp'?'panel':''}" data-id="${escape(d.id)}" style="left:${d.x}px;top:${d.y}px"><div class="head" data-handle="1"><span>${d.type==='facp'?'FACP — 10 ZONE':names[d.type]+' '+escape(d.id.split('-').pop())}</span>${d.type==='facp'?'':`<button class="remove" data-remove="${escape(d.id)}" title="Buang komponen">×</button>`}</div><div class="face">${face(d.type)}</div><div class="terminals">${pins(d).map(p=>`<div class="terminal ${selected===key(d.id,p)?'selected':''}" data-pin="${escape(p)}" title="${escape(p)}"><span>${escape(p)}</span><span class="pin"></span></div>`).join('')}</div></div>`).join('');$('catalog').innerHTML=Object.keys(limits).map(t=>{const count=devices.filter(d=>d.type===t).length;return `<button class="add" data-add="${t}" ${count>=limits[t]?'disabled':''}><span>+ ${names[t]}</span><span class="badge">${count}/${limits[t]}</span></button>`}).join('');$('counter').textContent=`${devices.length-1} komponen pada papan`;draw()};function draw(){
  const svg=$('wires');svg.innerHTML='';const NS='http://www.w3.org/2000/svg';
