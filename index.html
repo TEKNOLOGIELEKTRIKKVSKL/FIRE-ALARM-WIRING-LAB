@@ -178,7 +178,11 @@ function init(){wireRedo=[];devices=[{id:'facp',type:'facp',x:32,y:55}];nextId=1
  paths.forEach((item,j)=>{const pts=item.pts;let d=`M ${pts[0].x} ${pts[0].y}`;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],hits=[];for(let k=0;k<j;k++){const old=paths[k].pts;for(let h=1;h<old.length;h++){let c=cross(a,b,old[h-1],old[h]);if(!c)c=cross(old[h-1],old[h],a,b);if(c)hits.push(c)}}hits.sort((u,v)=>Math.hypot(u.x-a.x,u.y-a.y)-Math.hypot(v.x-a.x,v.y-a.y));let vx=(b.x-a.x)/Math.hypot(b.x-a.x,b.y-a.y),vy=(b.y-a.y)/Math.hypot(b.x-a.x,b.y-a.y);let last=0;for(const h of hits){let dist=Math.hypot(h.x-a.x,h.y-a.y),total=Math.hypot(b.x-a.x,b.y-a.y);if(dist-9<last||dist+9>total)continue;d+=` L ${h.x-vx*9} ${h.y-vy*9} Q ${h.x-vy*15} ${h.y+vx*15} ${h.x+vx*9} ${h.y+vy*9}`;last=dist+9}d+=` L ${b.x} ${b.y}`}
  const halo=document.createElementNS(NS,'path');halo.setAttribute('d',d);halo.setAttribute('class','wire-halo');svg.appendChild(halo);const path=document.createElementNS(NS,'path');path.setAttribute('d',d);path.setAttribute('stroke',item.w.color);path.setAttribute('class','wire');path.setAttribute('data-wire',item.i);svg.appendChild(path)});$('countW').textContent=wires.length+' wayar';
  };function add(t){if(devices.filter(d=>d.type===t).length>=limits[t])return;const n=nextId++;const d={id:t+'-'+n,type:t,x:380+((n-1)%5)*205,y:60+Math.floor((n-1)/5)*200};devices.push(d);invalidateResults();render();msg(names[t]+' ditambah. Drag tajuk untuk pindahkan komponen.')};function terminal(id,p){const k=key(id,p);if(!selected){selected=k;render();msg('Terminal pertama: '+k+'. Klik terminal kedua.');return}const [aId,...aParts]=selected.split(':');const aP=aParts.join(':');if(selected===k){selected=null;render();msg('Pilihan dibatalkan.');return}if(wires.some(w=>(w.a.id===aId&&w.a.p===aP&&w.b.id===id&&w.b.p===p)||(w.b.id===aId&&w.b.p===aP&&w.a.id===id&&w.a.p===p))){selected=null;render();msg('Sambungan itu sudah wujud.');return}wireRedo=[];wires.push({a:{id:aId,p:aP},b:{id,p},color:document.querySelector('input[name=color]:checked').value});invalidateResults();selected=null;render();msg('Wayar berjaya disambung: '+aId+' '+aP+' → '+id+' '+p)};
-$('board').addEventListener('click',e=>{if(drag?.moved)return;const t=e.target.closest('[data-pin]');if(t){terminal(t.closest('[data-id]').dataset.id,t.dataset.pin);return}const w=e.target.closest('[data-wire]');if(w){wires.splice(Number(w.dataset.wire),1);wireRedo=[];invalidateResults();draw();msg('Wayar dipadam.')}});$('catalog').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(b)add(b.dataset.add)});$('devices').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;const id=b.dataset.remove;devices=devices.filter(d=>d.id!==id);wires=wires.filter(w=>w.a.id!==id&&w.b.id!==id);wireRedo=[];selected=null;invalidateResults();render();msg('Komponen dan wayarnya dibuang.')});$('devices').addEventListener('pointerdown',e=>{const h=e.target.closest('[data-handle], .device .face');if(!h||e.target.closest('button, [data-pin], .terminal'))return;const el=h.closest('[data-id]'),d=get(el.dataset.id);drag={id:d.id,x:e.clientX,y:e.clientY,ox:d.x,oy:d.y,moved:false,pointer:e.pointerId};h.setPointerCapture(e.pointerId)});$('devices').addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointer)return;const d=get(drag.id);if(!d)return;const dx=(e.clientX-drag.x)/(window.labZoom||1),dy=(e.clientY-drag.y)/(window.labZoom||1);if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;d.x=Math.max(0,Math.min(1500,drag.ox+dx));d.y=Math.max(0,Math.min(850,drag.oy+dy));const el=document.querySelector(`[data-id="${drag.id}"]`);if(el){el.style.left=d.x+'px';el.style.top=d.y+'px'}draw()});$('devices').addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointer){const old=drag;setTimeout(()=>{if(drag===old)drag=null},0)}});$('undo').onclick=()=>{if(!wires.length){msg('Tiada wayar untuk UNDO.');return}wireRedo.push(wires.pop());selected=null;invalidateResults();render();msg('Sambungan terakhir dibatalkan. Tekan REDO untuk kembalikan.')};window.fawRedoWire=()=>{if(!wireRedo.length){msg('Tiada tindakan untuk REDO.');return}const w=wireRedo.pop();if(!get(w.a.id)||!get(w.b.id)){msg('Komponen asal tiada. REDO tidak boleh dibuat.');return}wires.push(w);selected=null;invalidateResults();render();msg('Sambungan wayar berjaya dikembalikan.')};$('clear').onclick=()=>{if(confirm('Padam semua wayar?')){wires=[];wireRedo=[];selected=null;invalidateResults();render()}};$('reset').onclick=()=>{if(confirm('Reset semua komponen dan wayar?')){init();invalidateResults()}};
+$('board').addEventListener('click',e=>{if(drag?.moved)return;const t=e.target.closest('[data-pin]');if(t){terminal(t.closest('[data-id]').dataset.id,t.dataset.pin);return}const w=e.target.closest('[data-wire]');if(w){wires.splice(Number(w.dataset.wire),1);wireRedo=[];invalidateResults();draw();msg('Wayar dipadam.')}});$('catalog').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(b)add(b.dataset.add)});$('devices').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;const id=b.dataset.remove;devices=devices.filter(d=>d.id!==id);wires=wires.filter(w=>w.a.id!==id&&w.b.id!==id);wireRedo=[];selected=null;invalidateResults();render();msg('Komponen dan wayarnya dibuang.')});$('devices').addEventListener('pointerdown',e=>{const h=e.target.closest('[data-handle], .device .face');if(!h||e.target.closest('button, [data-pin], .terminal'))return;const el=h.closest('[data-id]'),d=get(el.dataset.id);drag={id:d.id,x:e.clientX,y:e.clientY,ox:d.x,oy:d.y,moved:false,pointer:e.pointerId};h.setPointerCapture(e.pointerId)});let dragFrame=0;
+ function fastWirePreview(){dragFrame=0;const svg=$('wires'),NS='http://www.w3.org/2000/svg';svg.replaceChildren();const frag=document.createDocumentFragment();wires.forEach((w,i)=>{const a=point(w.a.id,w.a.p),b=point(w.b.id,w.b.p);if(!a||!b)return;const mid=(a.x+b.x)/2;const d=`M ${a.x} ${a.y} L ${mid} ${a.y} L ${mid} ${b.y} L ${b.x} ${b.y}`;const path=document.createElementNS(NS,'path');path.setAttribute('d',d);path.setAttribute('stroke',w.color);path.setAttribute('class','wire');path.setAttribute('data-wire',i);frag.appendChild(path)});svg.appendChild(frag)}
+ function scheduleDragPreview(){if(!dragFrame)dragFrame=requestAnimationFrame(fastWirePreview)}
+ $('devices').addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointer)return;const d=get(drag.id);if(!d)return;const dx=(e.clientX-drag.x)/(window.labZoom||1),dy=(e.clientY-drag.y)/(window.labZoom||1);if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;d.x=Math.max(0,Math.min(1500,drag.ox+dx));d.y=Math.max(0,Math.min(850,drag.oy+dy));const el=document.querySelector(`[data-id="${drag.id}"]`);if(el){el.style.left=d.x+'px';el.style.top=d.y+'px'}scheduleDragPreview()});function finishComponentDrag(e){if(drag&&e.pointerId===drag.pointer){const old=drag;if(dragFrame){cancelAnimationFrame(dragFrame);dragFrame=0}drag=null;draw();setTimeout(()=>{if(drag===old)drag=null},0)}}
+ $('devices').addEventListener('pointerup',finishComponentDrag);$('devices').addEventListener('pointercancel',finishComponentDrag);$('undo').onclick=()=>{if(!wires.length){msg('Tiada wayar untuk UNDO.');return}wireRedo.push(wires.pop());selected=null;invalidateResults();render();msg('Sambungan terakhir dibatalkan. Tekan REDO untuk kembalikan.')};window.fawRedoWire=()=>{if(!wireRedo.length){msg('Tiada tindakan untuk REDO.');return}const w=wireRedo.pop();if(!get(w.a.id)||!get(w.b.id)){msg('Komponen asal tiada. REDO tidak boleh dibuat.');return}wires.push(w);selected=null;invalidateResults();render();msg('Sambungan wayar berjaya dikembalikan.')};$('clear').onclick=()=>{if(confirm('Padam semua wayar?')){wires=[];wireRedo=[];selected=null;invalidateResults();render()}};$('reset').onclick=()=>{if(confirm('Reset semua komponen dan wayar?')){init();invalidateResults()}};
 
 function updateIdentity(){const name=$('studentName').value.trim().replace(/\s+/g,' ').toUpperCase();const ic=$('studentIC').value.replace(/\D/g,'').slice(0,12);if($('studentIC').value!==ic)$('studentIC').value=ic;$('showName').textContent=name||'BELUM DIISI';$('showIC').textContent=ic||'BELUM DIISI';return{name,ic}}
 $('studentName').addEventListener('input',function(){this.value=this.value.toLocaleUpperCase('ms-MY');updateIdentity()});$('studentIC').addEventListener('input',updateIdentity);
@@ -766,6 +770,88 @@ function setup(){if(document.getElementById('faw83Float'))return;
  // A collapsed or expanded toolbar must remain within the visible screen.
  by('f83Min').addEventListener('click',()=>requestAnimationFrame(keepVisible));
  keepVisible();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script>
+
+<style id="faw85-styles">
+#faw85Pdf{background:#087b62!important;border:2px solid #67d8b5!important;color:#fff!important;font-weight:900!important}
+#faw85Pdf[disabled]{opacity:.65!important}
+#faw85Progress{position:fixed;inset:0;z-index:20000;display:none;align-items:center;justify-content:center;background:#091923c9;color:#fff;padding:20px}
+#faw85Progress.on{display:flex}
+#faw85Progress .inner{max-width:340px;text-align:center;background:#203d51;border:2px solid #79b5c5;border-radius:12px;padding:24px;line-height:1.6}
+#faw85Progress .spinner{width:38px;height:38px;margin:0 auto 14px;border:4px solid #92b6c9;border-top-color:#fff;border-radius:50%;animation:faw85spin .9s linear infinite}
+@keyframes faw85spin{to{transform:rotate(360deg)}}
+@media print{#faw85Progress,#faw85Pdf{display:none!important}}
+</style>
+<script id="faw85-pdf-and-performance">
+(()=>{'use strict';
+function setup(){
+ const oldBtn=document.getElementById('printPdf');if(!oldBtn||document.getElementById('faw85Pdf'))return;
+ const direct=document.createElement('button');direct.id='faw85Pdf';direct.type='button';direct.textContent='⬇ MUAT TURUN PDF';oldBtn.before(direct);
+ const overlay=document.createElement('div');overlay.id='faw85Progress';overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');overlay.innerHTML='<div class="inner"><div class="spinner"></div><strong id="faw85Message">PDF SEDANG DIJANA...</strong><div style="font-size:12px;margin-top:8px">Sila tunggu dan jangan tekan berulang kali.</div></div>';document.body.append(overlay);
+ const loader=(url,test)=>new Promise((resolve,reject)=>{if(test()){resolve();return}const sc=document.createElement('script');sc.src=url;sc.onload=()=>test()?resolve():reject(Error('Pustaka tidak tersedia'));sc.onerror=()=>reject(Error('Sambungan pustaka PDF gagal'));document.head.append(sc)});
+ const waitFrame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+ const text=(id)=>document.getElementById(id)?.value?.trim()||'';
+ const safe=(s)=>s.replace(/[^A-Z0-9_-]+/gi,'_').slice(0,65);
+ const msg=(s)=>{document.getElementById('faw85Message').textContent=s};
+ function saveBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.style.display='none';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return url}
+ direct.addEventListener('click',async()=>{
+  if(direct.disabled)return;
+  const name=text('studentName').toUpperCase(),ic=text('studentIC').replace(/\D/g,'');
+  if(!name){alert('Sila isi nama pelajar.');document.getElementById('studentName')?.focus();return}
+  if(!/^\d{12}$/.test(ic)){alert('Sila isi 12 digit nombor kad pengenalan.');document.getElementById('studentIC')?.focus();return}
+  direct.disabled=true;overlay.classList.add('on');let holder;
+  try{
+   msg('MEMUATKAN PENJANA PDF...');
+   await Promise.all([
+    loader('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js',()=>!!window.jspdf?.jsPDF),
+    loader('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',()=>!!window.html2canvas)
+   ]);
+   msg('MENYEDIAKAN KESELURUHAN WORKBENCH...');
+   const board=document.getElementById('board');const clone=board.cloneNode(true);
+   clone.removeAttribute('id');clone.classList.add('faw85-capture-board');
+   clone.style.cssText='position:relative!important;left:0!important;top:0!important;width:1800px!important;height:1100px!important;transform:none!important;transform-origin:0 0!important;overflow:hidden!important;';
+   // Preserve component positions in logical board coordinates, independent of screen zoom and pan.
+   const originals=board.querySelectorAll('#devices .device');const copies=clone.querySelectorAll('#devices .device');
+   originals.forEach((el,i)=>{const c=copies[i];if(!c)return;c.style.left=el.style.left;c.style.top=el.style.top;c.style.width=(el.offsetWidth)+'px';c.style.height=(el.offsetHeight)+'px';c.style.minWidth='0'});
+   const svg=clone.querySelector('#wires');if(svg){svg.setAttribute('viewBox','0 0 1800 1100');svg.setAttribute('width','1800');svg.setAttribute('height','1100');svg.style.width='1800px';svg.style.height='1100px';svg.style.left='0';svg.style.top='0'}
+   clone.querySelectorAll('[data-remove]').forEach(e=>e.remove());
+   holder=document.createElement('div');holder.style.cssText='position:fixed;left:-20000px;top:0;width:1800px;height:1100px;pointer-events:none;overflow:hidden;z-index:-1';holder.append(clone);document.body.append(holder);
+   await waitFrame();msg('MERAKAM LUKISAN DAN WAYAR...');
+   const canvas=await window.html2canvas(clone,{backgroundColor:'#edf1f4',scale:Math.min(1,Math.max(.7,1600/1800)),width:1800,height:1100,scrollX:0,scrollY:0,logging:false,useCORS:true,allowTaint:false});
+   msg('MENYUSUN PDF A4 LANDSKAP...');
+   const pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4',compress:true});
+   const pw=297,ph=210,margin=7;
+   pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.text('FIRE ALARM WIRING VIRTUAL LAB KOLEJ VOKASIONAL',margin,12);
+   pdf.setFont('helvetica','normal');pdf.setFontSize(8.5);pdf.text('NAMA PELAJAR: '+name,margin,18);pdf.text('NO. KAD PENGENALAN: '+ic,margin,23);
+   const result=document.getElementById('resultOverall')?.textContent||'BELUM DIUJI';pdf.text('KEPUTUSAN: '+result,margin,28);
+   // Board always fits as a whole, including off-screen components and wires.
+   const maxW=pw-margin*2,maxH=ph-43;const ratio=Math.min(maxW/1800,maxH/1100);const w=1800*ratio,h=1100*ratio;
+   pdf.addImage(canvas.toDataURL('image/jpeg',.84),'JPEG',(pw-w)/2,32,w,h,undefined,'FAST');
+   pdf.setDrawColor(130);pdf.rect((pw-w)/2,32,w,h);
+   pdf.setFontSize(7);pdf.text('© 2026 MUHAMAD ARIF BIN OMAR | KOLEJ VOKASIONAL SETAPAK | HAK CIPTA TERPELIHARA',pw/2,ph-4,{align:'center'});
+   const blob=pdf.output('blob');const filename='FAW-LAB_'+safe(name)+'_'+ic+'.pdf';
+   msg('MENYIMPAN PDF...');
+   // On iOS, share sheet is the most reliable way to reach Save to Files.
+   let shared=false;
+   if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&navigator.canShare&&navigator.share){
+    const file=new File([blob],filename,{type:'application/pdf'});
+    if(navigator.canShare({files:[file]})){
+     try{await navigator.share({files:[file],title:'FAW-LAB PDF'});shared=true}catch(err){if(err.name==='AbortError'){shared=true}}
+    }
+   }
+   if(!shared){const url=saveBlob(blob,filename);
+    if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
+     // Offer a visible open-in-tab fallback on iOS if Safari blocks download.
+     const open=document.createElement('a');open.href=url;open.target='_blank';open.rel='noopener';open.textContent='BUKA PDF UNTUK SIMPAN KE FILES';open.style.cssText='position:fixed;bottom:12px;left:12px;z-index:20001;background:#087b62;color:white;padding:12px;border-radius:9px';document.body.append(open);setTimeout(()=>open.remove(),45000);
+    }
+   }
+   document.getElementById('toast').textContent='PDF telah dijana. Jika muat turun disekat, gunakan CETAK / SIMPAN PDF sebagai alternatif.';
+  }catch(err){console.error('FAW-LAB PDF:',err);alert('PDF terus tidak berjaya: '+err.message+'\nGunakan butang CETAK / SIMPAN PDF sebagai alternatif.');}
+  finally{holder?.remove();overlay.classList.remove('on');direct.disabled=false}
+ });
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
