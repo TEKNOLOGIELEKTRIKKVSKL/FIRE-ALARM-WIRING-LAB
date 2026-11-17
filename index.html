@@ -815,32 +815,7 @@ const realPrint=window.print;window.print=function(){};
 try{print.onclick?.call(print)}catch(err){tab.close();alert('Ralat menyediakan laporan: '+err.message);return}finally{window.print=realPrint}
 const report=document.getElementById('print-report');if(!report||!report.children.length){tab.close();showMobileNotice('Laporan tidak dapat dijana. Sila cuba semula.');return}
 const styles=Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('');const cloned=report.cloneNode(true);cloned.removeAttribute('aria-hidden');cloned.style.display='flex';
-const html='<!doctype html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+styles+'<style>body{margin:0!important;background:white!important;color:#111!important}#print-report{display:flex!important;flex-direction:column!important;width:100%!important;min-height:180mm!important}#fawReportPrint{position:fixed;right:12px;top:12px;z-index:9999;background:#075e43;color:white;border:0;border-radius:8px;padding:12px 16px;font:bold 14px Arial}@media print{#fawReportPrint{display:none!important}@page{size:A4 landscape;margin:7mm}#print-report{height:192mm!important;max-height:192mm!important;overflow:hidden!important}}</style><style id="faw86-style">#wires .faw86-segment-hit{cursor:move;touch-action:none;pointer-events:stroke!important}#faw86DeleteMode.active{background:#ac3030!important;border-color:#ff9b9b!important}#faw86ResetRoute,#faw86DeleteMode{font-size:11px!important;white-space:normal!important}#faw80Floating{flex-wrap:wrap}@media(max-width:760px){#faw86ResetRoute,#faw86DeleteMode{font-size:10px!important;padding:6px!important}}</style></head><body><button id="fawReportPrint" onclick="window.print()">🖨 CETAK / SIMPAN PDF</button>'+cloned.outerHTML+'<style id="faw864-autosave-css">
-#faw864SaveStatus{display:block;color:#a4eac1;font-size:10px;font-weight:700;padding:1px 4px;line-height:1.1}
-@media (orientation:landscape) and (max-height:650px) and (pointer:coarse){#faw864SaveStatus{position:absolute;right:12px;bottom:3px;z-index:1;pointer-events:none;background:#142f28bb;border-radius:4px}}
-@media print{#faw864SaveStatus{display:none!important}}
-</style>
-<script id="faw864-viewport-recovery">
-(()=>{'use strict';
- const key='FAW_LAB_VIEW_V864',scroll=document.getElementById('scroll'),board=document.getElementById('board'),sizer=document.getElementById('boardSizer');
- if(!scroll||!board||!sizer)return;
- let timer=0;
- function save(){clearTimeout(timer);timer=setTimeout(()=>{try{localStorage.setItem(key,JSON.stringify({zoom:window.labZoom||1,left:scroll.scrollLeft,top:scroll.scrollTop}))}catch(_){}},350)}
- const restore=()=>{try{const o=JSON.parse(localStorage.getItem(key)||'null');if(!o)return;
- const z=Number(o.zoom);if(Number.isFinite(z)&&z>=.2&&z<=3){
-  window.labZoom=z;board.style.transform='scale('+z+')';sizer.style.width=(1800*z)+'px';sizer.style.height=(1100*z)+'px';
-  const label=document.getElementById('zoomLabel');if(label)label.textContent=Math.round(z*100)+'%';
- }
- scroll.scrollLeft=Math.max(0,Number(o.left)||0);scroll.scrollTop=Math.max(0,Number(o.top)||0);
- }catch(_){}};
- requestAnimationFrame(()=>requestAnimationFrame(restore));
- scroll.addEventListener('scroll',save,{passive:true});
- ['zoomIn','zoomOut','zoomFit'].forEach(id=>document.getElementById(id)?.addEventListener('click',save));
- window.addEventListener('pagehide',()=>{clearTimeout(timer);try{localStorage.setItem(key,JSON.stringify({zoom:window.labZoom||1,left:scroll.scrollLeft,top:scroll.scrollTop}))}catch(_){}});
- document.getElementById('reset')?.addEventListener('click',()=>{setTimeout(()=>{try{localStorage.removeItem(key)}catch(_){}},20)});
-})();
-</script>
-</body></html>';
+const html = '<!doctype html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + styles + '<style>body{margin:0!important;background:white!important;color:#111!important}#print-report{display:flex!important;flex-direction:column!important;width:100%!important;min-height:180mm!important}#fawReportPrint{position:fixed;right:12px;top:12px;z-index:9999;background:#075e43;color:white;border:0;border-radius:8px;padding:12px 16px;font:bold 14px Arial}@media print{#fawReportPrint{display:none!important}@page{size:A4 landscape;margin:7mm}#print-report{height:192mm!important;max-height:192mm!important;overflow:hidden!important}}</style></head><body><button id="fawReportPrint" onclick="window.print()">🖨 CETAK / SIMPAN PDF</button>' + cloned.outerHTML + '</body></html>';
 tab.document.open();tab.document.write(html);tab.document.close();tab.focus();showMobileNotice('Laporan dibuka dalam tab baharu. Pilih CETAK / SIMPAN PDF dan Save as PDF.');
 },true);
 })();
