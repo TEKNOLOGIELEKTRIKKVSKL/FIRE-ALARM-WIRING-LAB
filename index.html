@@ -386,6 +386,19 @@ $('board').addEventListener('click',e=>{if(drag?.moved)return;const t=e.target.c
   return {pts,segment,horizontal};
  }
  function showManualPreview(i,pts){const w=wires[i];if(!w)return;setManual(i,pts);draw()}
+ // Desktop and touch: delete directly on pointerdown while delete mode is active.
+ // Do not rely on a synthetic click after pointer handling or SVG hit-testing.
+ $('wires').addEventListener('pointerdown',e=>{
+  if(!wireDeleteMode)return;
+  const hit=e.target.closest('[data-wire]');
+  if(!hit)return;
+  const idx=Number(hit.dataset.wire);
+  if(!Number.isInteger(idx)||idx<0||idx>=wires.length)return;
+  e.preventDefault();e.stopPropagation();
+  suppressWireClickUntil=Date.now()+600;
+  wires.splice(idx,1);wireRedo=[];routeUndo=[];routeRedo=[];
+  invalidateResults();draw();msg('Wayar dipadam.');
+ },true);
  $('wires').addEventListener('pointerdown',e=>{const hit=e.target.closest('.faw86-segment-hit');if(!hit||wireDeleteMode)return;const i=+hit.dataset.wire,k=+hit.dataset.segment;let pts=manualRouteFromSvg(i);if(!pts)return;
  // Match the segment selected before normalizing endpoints.
  const normalized=normalizeEditable(pts,k);if(!normalized)return;
